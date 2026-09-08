@@ -18,7 +18,7 @@ The idea is a heat map based on population data and local business data to deter
 
 ![Design image](260_application_sketch.png)
 
-This is what the site should look like.
+This is what the functionality of the site looks like. Example of what you should see on the site also hastily included
 
 ```mermaid
 sequenceDiagram
@@ -44,6 +44,7 @@ I am going to use the required technologies in the following ways.
 - **Service** - login, logout, registering, backend map functions
 - **DB/Login** - User data when people want to save searches long term
 - **WebSocket** - Probably gonna use websocket for map data returns when there they make changes or searches or anything else
+- **3rdPartyAPI** - Probably google maps API, Mapbox, OpenStreetMap, or whatever else fits best
 
 ## 🚀 Specification Deliverable
 
@@ -57,7 +58,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] A concise and compelling elevator pitch
 - [x] Description of key features
 - [x] Description of how you will use each technology including your 3rd party API and use of WebSocket
-- [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
+- [x] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
 ## 🚀 AWS deliverable
 
