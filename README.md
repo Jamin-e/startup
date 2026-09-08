@@ -2,44 +2,45 @@
 
 [My Notes](notes.md)
 
-A brief description of the application here. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+### Description
 
-> [!NOTE]
-> This is a template for your startup application. You must modify this `README.md` file for each phase of your development. You only need to fill in the section for each deliverable when that deliverable is submitted in Canvas. Without completing the section for a deliverable, the TA will not know what to look for when grading your submission. Feel free to add additional information to each deliverable description, but make sure you at least have the list of rubric items and a description of what you did for each item.
+I want to create an interactive data science related site. The idea is a heat map based on population data and local business data to determine the needs of local communities. Initially it will be a heat map based purely on population data and then there will be iterations of each needed business type(such as dentistries, health centers, grocery stores, construction companies, etc.) where the heat is "lowered" in a sense based on the location of the local business and the perceived size/capacity of the business.
 
-> [!NOTE]
-> If you are not familiar with Markdown then you should review the [documentation](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) before continuing.
+The application will have the simple but fundamental levels of the web programming languages to ensure the site and map works well and is easy to use on all devices and meet all the basic map related needs such as searching for a certain location. The map data will be stored in the database, as well as whatever user interactions are needed such as specific searches in order to have a smooth experience by running the big data science stuff such as complex searches on the backend, which websockets should make possible. The websockets will bring the search to the backend, which will process the search, and then return the results such as the map data(which would be unreasonably large to store on the site itself and would need the websockets to bring the appropriate portions to the user as it is requested). The site will include user authentication. Time permitting, user data that needs to be saved beyond cookie use will be making use of the user authentication to ensure data attributed to a user stays with only that user.
+
+I would say an acceptable level of mastery would be ensuring that all aspects of the site are intuitive and easy to use on all devices, especially since lots of interactive material like what I'm doing is difficult to do well on mobile devices and since my site will be using lots of it. As for the actual data, since it is not a part of actually demonstrating web programming mastery, and will be unreasonably difficult to find and compile data for an introductory course, it will probably be dummy data for the demonstration.
 
 ### Elevator pitch
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Same thing as the description, but pretend I made it less wordy
 
 ### Design
 
 ![Design image](placeholder.png)
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+This is what the site should look like.
 
 ```mermaid
 sequenceDiagram
     actor You
     actor Website
-    You->>Website: Replace this with your design
+    You->>Website: Requesting data about a local place, the pop, and a certain need
+    Website->>You: The data you want
 ```
 
 ### Key features
 
-- Describe your key feature
-- Describe your key feature
-- Describe your key feature
+- Heat map based on population
+- Edited heat map based on needs and current needs met
+- Many needs are represented
 
 ### Technologies
 
 I am going to use the required technologies in the following ways.
 
-- **HTML** - Description here
-- **CSS** - Description here
-- **React** - Description here
+- **HTML** - Basic site, no need to overdo it
+- **CSS** - Same deal
+- **React** - Likely what is most needed for the map
 - **Service** - Description here
 - **DB/Login** - Description here
 - **WebSocket** - Description here
@@ -51,10 +52,10 @@ I am going to use the required technologies in the following ways.
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Git commit requirement)
-- [ ] Proper use of Markdown
-- [ ] A concise and compelling elevator pitch
-- [ ] Description of key features
+- [x] I completed the prerequisites for this deliverable (Git commit requirement)
+- [x] Proper use of Markdown
+- [x] A concise and compelling elevator pitch
+- [x] Description of key features
 - [ ] Description of how you will use each technology including your 3rd party API and use of WebSocket
 - [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
