@@ -12,11 +12,11 @@ I would say an acceptable level of mastery would be ensuring that all aspects of
 
 ### Elevator pitch
 
-Same thing as the description, but pretend I made it less wordy
+The idea is a heat map based on population data and local business data to determine the needs of local communities. Initially it will be a heat map based purely on population data and then there will be versions of each needed business type(such as dentistries, health centers, grocery stores, construction companies, etc.) where the heat is "lowered" in a sense based on the location of the local business and the perceived size/capacity of the business.
 
 ### Design
 
-![Design image](placeholder.png)
+![Design image](260_application_sketch.png)
 
 This is what the site should look like.
 
@@ -38,12 +38,12 @@ sequenceDiagram
 
 I am going to use the required technologies in the following ways.
 
-- **HTML** - Basic site, no need to overdo it
-- **CSS** - Same deal
-- **React** - Likely what is most needed for the map
-- **Service** - Description here
-- **DB/Login** - Description here
-- **WebSocket** - Description here
+- **HTML** - Basic site, one for login and one for the map. no need to overdo it
+- **CSS** - Same deal, make sure it flows well on any device, try not to clutter
+- **React** - Likely what is most needed for the map functionality/interactivity, as well as login and similar functions
+- **Service** - login, logout, registering, backend map functions
+- **DB/Login** - User data when people want to save searches long term
+- **WebSocket** - Probably gonna use websocket for map data returns when there they make changes or searches or anything else
 
 ## 🚀 Specification Deliverable
 
@@ -56,7 +56,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] Proper use of Markdown
 - [x] A concise and compelling elevator pitch
 - [x] Description of key features
-- [ ] Description of how you will use each technology including your 3rd party API and use of WebSocket
+- [x] Description of how you will use each technology including your 3rd party API and use of WebSocket
 - [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
 ## 🚀 AWS deliverable
