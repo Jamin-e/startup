@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>InvisibleHand</title>
+</head>
+<body>
+<header>
+    <h1>InvisibleHand</h1>
+
+
+</header>
+<main>
+    <section id="auth-section">
+        <h2>Create account or login</h2>
+        <form id="auth-form">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" required>
+            <button type="submit">Continue</button>
+        </form>
+        <p id="login-message" hidden></p>
+    </section>
+</main>
+<footer>
+    <a href="https://github.com/Jamin-e/startup">Github</a>
+    <p>About:</p>
+    <p>This is a datascience site to show where businesses and services are most needed</p>
+
+</footer>
+<script>
+    const authForm = document.querySelector('#auth-form');
+    const usernameInput = document.querySelector('#username');
+    const loginMessage = document.querySelector('#login-message');
+
+    authForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const username = usernameInput.value.trim();
+        if (!username) {
+            return;
+        }
+
+        loginMessage.textContent = `Logged in as ${username}`;
+        loginMessage.hidden = false;
+        authForm.reset();
+    });
+</script>
+</body>
+</html>
