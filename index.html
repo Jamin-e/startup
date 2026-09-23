@@ -14,6 +14,7 @@
     <section id = "search">
         <p>To be implemented: A search that changes the map to location and changes map type</p>
         <form role="search" action="/search" method="get" class="search-form">
+            <label for="query">City and State</label>
             <input
                 type="text"
                 name="query"
@@ -21,17 +22,17 @@
                 placeholder="City, State"
                 aria-label="City, State"
                 >
+            <label for = "service-select">Choose a service</label>
+            <select name="service" id="service-select" required>
+                <option value="" disabled selected hidden>Select an option...</option>
+                <option value="pediatrics">Pediatrics</option>
+                <option value="dentistry">Dentistry</option>
+            </select>
+            <button type = "submit">Search</button>
         </form>
-        <label for = "service-select">Choose a service</label>
-        <select name="service" id="service-select" required>
-            <option value="" disabled selected hidden>Select an option...</option>
-            <option value="pediatrics">Pediatrics</option>
-            <option value="dentistry">Dentistry</option>
-        </select>
-        <button type = "submit">Search</button>
     </section>
 
-    <section id = "saved searches">
+    <section id = "savedSearches">
         <p>To be implemented: a table that stores the data of previous searches</p>
         <h2>Saved searches</h2>
         <table>
