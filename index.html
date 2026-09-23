@@ -17,10 +17,16 @@
                 type="text"
                 name="query"
                 id="query"
-                placeholder="Enter your query"
-                aria-label="Enter your query"
+                placeholder="City, State"
+                aria-label="City, State"
                 >
         </form>
+        <label for = "service-select">Choose a service</label>
+        <select name="service" id="service-select" required>
+            <option value="" disabled selected hidden>Select an option...</option>
+            <option value="pediatrics">Pediatrics</option>
+            <option value="dentistry">Dentistry</option>
+        </select>
         <button type = "submit">Search</button>
     </section>
 
@@ -30,7 +36,7 @@
             <thead>
             <tr>
             <th>Search #</th>
-            <th>Search type</th>
+            <th>Service</th>
             <th>State</th>
             <th>City</th>
             <th>Population</th>
