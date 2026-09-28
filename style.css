@@ -7,8 +7,13 @@
 }
 
 main{
+    display: flex;
+    flex-direction: column;
     font-family: "Open Sans", sans-serif;
     font-size: 16px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 header{
     text-align: center;
@@ -24,4 +29,9 @@ footer{
 }
 a {
     color: var(--accent-color);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
 }
