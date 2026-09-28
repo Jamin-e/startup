@@ -1,0 +1,14 @@
+main{
+    font: 15px sans-serif;
+}
+footer{
+    text-align: center;
+    justify-content: center;
+    position: absolute;
+    bottom: 0;
+    padding-top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    scroll-padding-top: 100%;
+}
