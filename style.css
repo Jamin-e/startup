@@ -1,21 +1,26 @@
+@import url("https://googleapis.com");
 :root {
     color-scheme: light dark;
-
-    /* Step 2: Define your color tokens */
     --bg-color: light-dark(#ffffff, #121212);
     --text-color: light-dark(#333333, #f5f5f5);
     --accent-color: light-dark(#0066cc, #3399ff);
 }
 
 main{
-    font: 15px sans-serif;
+    font-family: "Open Sans", sans-serif;
+    font-size: 16px;
 }
 header{
     text-align: center;
 }
 body{
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 footer{
     text-align: center;
     width: 100%;
+}
+a {
+    color: var(--accent-color);
 }
