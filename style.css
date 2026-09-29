@@ -14,7 +14,7 @@ main{
     justify-content: center;
     align-items: center;
     text-align: center;
-    max-width: 75%;
+    width: min(90%, 1000px);
     margin: 0 auto;
     padding: 2rem 1rem;
 }
@@ -38,6 +38,12 @@ footer{
 a {
     color: var(--accent-color);
 }
+a:hover {
+    color: var(--accent-color-2);
+}
+a:active {
+    color: var(--accent-color-2);
+}
 
 img {
     max-width: 100%;
@@ -55,4 +61,49 @@ th{
 td{
     border: 1px solid var(--accent-color-2);
     padding: 9px 12px;
+}
+#auth-form{
+    display: flex;
+}
+.search-form{
+    display: flex;
+}
+
+@media (max-width: 768px){
+    main{
+        width: 90%;
+        padding: 1.5rem 0.5rem;
+    }
+    table{
+        font-size: 14px;
+    }
+    th,td{
+        padding: 7px 9px;
+    }
+}
+
+@media (max-width: 480px){
+    main{
+        width: 95%;
+        font-size: 14px;
+        padding: 1rem 0.25rem;
+    }
+    header{
+        font-size: 0.9rem;
+    }
+    footer{
+        padding: 1rem 0.5rem;
+    }
+    #auth-form,.search-form{
+        flex-direction: column;
+        width: 100%;
+        gap:0.5rem;
+    }
+    table{
+        width: 100%;
+        font-size:12px;
+    }
+    th,td{
+        padding: 5px;
+    }
 }
