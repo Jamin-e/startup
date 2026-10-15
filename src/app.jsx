@@ -29,11 +29,11 @@ export default function App() {
                 </nav>
             </header>
 
-            <Routess>
+            <Routes>
                 <Route path='/' element={<Main/>} exact />
                 <Route path='/auth' element={<Auth/>} />
                 <Route path='*' element={<NotFound />} />
-            </Routess>
+            </Routes>
 
             <footer>
                 <a href="https://github.com/Jamin-e/startup">Jamin | Github</a>
