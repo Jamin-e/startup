@@ -20,6 +20,7 @@ main{
 }
 header{
     text-align: center;
+    display: flex;
 }
 html,
 body{
@@ -64,6 +65,7 @@ td{
 }
 #auth-form{
     display: flex;
+    gap: 1rem;
 }
 .search-form{
     display: flex;
