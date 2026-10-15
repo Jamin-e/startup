@@ -14,4 +14,4 @@ Interesting things I have learned about HTML
 
 ## React
 
-Interesting things I have learned about React
+Makes things more organized and concise

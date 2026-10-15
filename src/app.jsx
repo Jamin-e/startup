@@ -12,7 +12,7 @@ export default function App() {
             <header className="container-fluid">
                 <nav className="navbar fixed-top navbar-dark">
                     <div className="navbar-brand">
-                        Startup<sup>&reg;</sup>
+                        Invisible hand<sup>&reg;</sup>
                     </div>
                     <menu className="navbar-nav">
                         <li className="nav-item">

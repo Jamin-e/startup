@@ -16,7 +16,7 @@ The idea is a heat map based on population data and local business data to deter
 
 ### Design
 
-![Design image](260_application_sketch.png)
+![Design image](public/260_application_sketch.png)
 
 This is what the functionality of the site looks like. Example of what you should see on the site also hastily included
 
@@ -99,10 +99,10 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **Bundled using Vite** - I did not complete this part of the deliverable.
-- [ ] **Components** - I did not complete this part of the deliverable.
-- [ ] **Router** - I did not complete this part of the deliverable.
+- [x] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] **Bundled using Vite** - I did complete this part of the deliverable.
+- [x] **Components** - I did complete this part of the deliverable.
+- [x] **Router** - I did complete this part of the deliverable.
 
 ## 🚀 React part 2: Reactivity deliverable
 
