@@ -35,13 +35,10 @@ export default function App() {
                 <Route path='*' element={<NotFound />} />
             </Routess>
 
-            <footer className="bg-dark text-white-50">
-                <div className="container-fluid">
-                    <span className="text-reset">Author Name(s)</span>
-                    <a className="text-reset" href="https://github.com/webprogramming260/simon-react">
-                        Source
-                    </a>
-                </div>
+            <footer>
+                <a href="https://github.com/Jamin-e/startup">Jamin | Github</a>
+                <p>About:</p>
+                <p>This is a datascience site to show where businesses and services are most needed. This is a heatmap that starts as a population map, where heat is lowered based on local services and their estimated capacity.</p>
             </footer>
         </div>
         </BrowserRouter>
