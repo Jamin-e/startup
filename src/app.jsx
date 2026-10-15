@@ -1,41 +1,39 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
+import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
+import { Auth } from './auth/auth';
+import { Main } from './main/main';
 
 export default function App() {
     return (
+        <BrowserRouter>
         <div className="body bg-dark text-light">
             <header className="container-fluid">
                 <nav className="navbar fixed-top navbar-dark">
                     <div className="navbar-brand">
-                        Simon<sup>&reg;</sup>
+                        Startup<sup>&reg;</sup>
                     </div>
                     <menu className="navbar-nav">
                         <li className="nav-item">
-                            <a className="nav-link" href="index.html">
+                            <NavLink className="nav-link" to="">
                                 Home
-                            </a>
+                            </NavLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="play.html">
-                                Play
-                            </a>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="scores.html">
-                                Scores
-                            </a>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="about.html">
-                                About
-                            </a>
+                            <NavLink className="nav-link" to="auth">
+                                Login
+                            </NavLink>
                         </li>
                     </menu>
                 </nav>
             </header>
 
-            <main>App components go here</main>
+            <Routess>
+                <Route path='/' element={<Main/>} exact />
+                <Route path='/auth' element={<Auth/>} />
+                <Route path='*' element={<NotFound />} />
+            </Routess>
 
             <footer className="bg-dark text-white-50">
                 <div className="container-fluid">
@@ -46,5 +44,9 @@ export default function App() {
                 </div>
             </footer>
         </div>
+        </BrowserRouter>
     );
+}
+function NotFound() {
+    return <main className="container-fluid bg-secondary text-center">404: Return to sender. Address unknown.</main>;
 }
