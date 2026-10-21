@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { MessageDialog } from './messageDialog';
 
 export function Unauthenticated(props) {
-    const [userName, setUserName] = React.useState(props.userName);
+    const [userName, setUserName] = React.useState(props.userName ?? '');
     const [password, setPassword] = React.useState('');
     const [displayError, setDisplayError] = React.useState(null);
 
@@ -27,7 +27,7 @@ export function Unauthenticated(props) {
                 </div>
                 <div className='input-group mb-3'>
                     <span className='input-group-text'>🔒</span>
-                    <input className='form-control' type='password' onChange={(e) => setPassword(e.target.value)} placeholder='password' />
+                    <input className='form-control' type='password' value={password} onChange={(e) => setPassword(e.target.value)} placeholder='password' autoComplete="current-password" />
                 </div>
                 <Button variant='primary' onClick={() => loginUser()} disabled={!userName || !password}>
                     Login
