@@ -15,3 +15,4 @@ Interesting things I have learned about HTML
 ## React
 
 Makes things more organized and concise
+Real time functionality is nifty ngl
