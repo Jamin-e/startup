@@ -39,9 +39,9 @@ function handleSearch(event){
         service: service,
         state: state,
         city: city,
-        population: population,
-        heat: heat,
-        oldData: date
+        population: 100,
+        heat: 1.15,
+        oldData: 10/15/2026
     };
 
     const updatedSearches = [...search, newSearch];
@@ -64,7 +64,7 @@ function handleSearch(event){
         <main>
             <section id="search">
                 <p>To be implemented: A search that changes the map to location and changes map type</p>
-                <form role="search" action="/search" method="get" className="search-form">
+                <form role="search" onSubmit={handleSearch} className="search-form">
                     <label htmlFor="query">City and State</label>
                     <input
                         type="text"
@@ -72,15 +72,20 @@ function handleSearch(event){
                         id="query"
                         placeholder="City, State"
                         aria-label="City, State"
+                        value={query}
+                        onChange={(event) => setQuery(event.target.value)}
+                        required
                     />
                     <label htmlFor="service-select">Choose a service</label>
-                    <select name="service" id="service-select" required>
+                    <select name="service" id="service-select" value={service} onChange={(event) => setService(event.target.value)} required>
                         <option value="" disabled selected hidden>Select an option...</option>
                         <option value="pediatrics">Pediatrics</option>
                         <option value="dentistry">Dentistry</option>
                     </select>
                     <button type="submit">Search</button>
                 </form>
+
+                {error && <p role={"alert"}>{error}</p>}
             </section>
 
             <section id="savedSearches">
@@ -99,7 +104,25 @@ function handleSearch(event){
                     </tr>
                     </thead>
 
-                    <tbody id = "search">{searchRows}</tbody>
+                    <tbody id = "search-results">
+                    {search.length > 0 ? (
+                        search.map((item, index) => (
+                            <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{item.service}</td>
+                                <td>{item.state}</td>
+                                <td>{item.city}</td>
+                                <td>{item.population.toLocaleString()}</td>
+                                <td>{item.heat}</td>
+                                <td>{item.oldData}</td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="7">No results found.</td>
+                        </tr>
+                    )}
+                    </tbody>
                 </table>
             </section>
 
