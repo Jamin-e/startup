@@ -1,18 +1,26 @@
 import React from 'react';
 import '../app.css'
+import { Unauthenticated } from './unauthenticated';
+import { Authenticated } from './authenticated';
+import { AuthState } from './authState';
 
-export function Auth() {
+export function Auth({ userName, authState, onAuthChange}) {
     return (
         <main>
-            <section id="auth-section">
-                <h2>Create account or login</h2>
-                <form id="auth-form">
-                    <label htmlFor="username">Username</label>
-                    <input id="username" name="username" type="text" autoComplete="username" required/>
-                    <button type="submit">Continue</button>
-                </form>
-                <p id="login-message" hidden></p>
-            </section>
+            <div>
+                {authState !== AuthState.Unknown && <h2>Create account or login</h2>}
+                {authState === AuthState.Authenticated && (
+                    <Authenticated userName={userName} onLogout={() => onAuthChange(userName, AuthState.Unauthenticated)} />
+                )}
+                {authState === AuthState.Unauthenticated && (
+                    <Unauthenticated
+                        userName={userName}
+                        onLogin={(loginUserName) => {
+                            onAuthChange(loginUserName, AuthState.Authenticated);
+                        }}
+                    />
+                )}
+            </div>
         </main>
     );
 }

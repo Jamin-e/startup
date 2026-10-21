@@ -4,6 +4,7 @@ import './app.css';
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
 import { Auth } from './auth/auth';
 import { Main } from './main/main';
+import { AuthState } from "./auth/authState";
 
 export default function App() {
     return (
