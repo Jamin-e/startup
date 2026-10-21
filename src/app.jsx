@@ -37,7 +37,7 @@ export default function App() {
             </header>
 
             <Routes>
-                <Route path='/' element={<Main userName={{userName}}/>} exact />
+                <Route path='/' element={<Main userName={userName}/>} />
                 <Route
                     path='/auth'
                     element={

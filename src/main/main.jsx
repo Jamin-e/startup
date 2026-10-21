@@ -41,7 +41,7 @@ function handleSearch(event){
         city: city,
         population: 100,
         heat: 1.15,
-        oldData: 10/15/2026
+        oldData: new Date().toLocaleDateString()
     };
 
     const updatedSearches = [...search, newSearch];
