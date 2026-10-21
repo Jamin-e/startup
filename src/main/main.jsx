@@ -3,36 +3,61 @@ import '../app.css';
 
 export function Main() {
     const [search, setSearch] = React.useState([]);
+    const [query, setQuery] = React.useState('');
+    const [service, setService] = React.useState('');
+    const [error, setError] = React.useState('');
 
     React.useEffect(() => {
-        const searchText = localStorage.getItem("search",);
+        try{
+        const searchText = localStorage.getItem("search");
         if (searchText) {
-            setSearch(JSON.parse(searchText));
+            const savedSearches = JSON.parse(searchText);
+            if (Array.isArray(savedSearches)) {
+                setSearch(savedSearches);
+            }
         }
-    }, []);
-
-    const searchRows = [];
-    if (search.length) {
-        for (const [i, search] of search.entries()){
-            searchRows.push(
-                <tr key={i}>
-                    <td>{i}</td>
-                    <td>{search.service}</td>
-                    <td>{search.state}</td>
-                    <td>{search.city}</td>
-                    <td>{search.population}</td>
-                    <td>{search.heat}</td>
-                    <td>{search.oldData}</td>
-                </tr>
-            );
-        }
-    } else {
-        searchRows.push(
-            <tr key = '0'>
-        <td colSpan='7'> No results found.</td>
-        </tr>
-        );
+    }catch (error){
+        console.error(error);
     }
+}, []);
+
+function handleSearch(event){
+    event.preventDefault();
+    setError('');
+
+    const parts = query.split(',');
+
+    if (parts.length !==2 || !parts[0].trim() || !parts[1].trim()) {
+        setError('Enter a city and state');
+        return;
+    }
+
+    const city = parts[0].trim();
+    const state = parts[1].trim();
+
+    const newSearch = {
+        service: service,
+        state: state,
+        city: city,
+        population: population,
+        heat: heat,
+        oldData: date
+    };
+
+    const updatedSearches = [...search, newSearch];
+
+    setSearch(updatedSearches);
+
+    try {
+        localStorage.setItem("search", JSON.stringify(updatedSearches));
+    } catch (error) {
+        console.error(error);
+        setError(error);
+    }
+
+    setQuery('')
+    setService('');
+}
 
 
     return (
@@ -74,7 +99,7 @@ export function Main() {
                     </tr>
                     </thead>
 
-                    <tbody id = "searches"></tbody>
+                    <tbody id = "search">{searchRows}</tbody>
                 </table>
             </section>
 
