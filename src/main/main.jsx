@@ -2,6 +2,39 @@ import React from 'react';
 import '../app.css';
 
 export function Main() {
+    const [search, setSearch] = React.useState([]);
+
+    React.useEffect(() => {
+        const searchText = localStorage.getItem("search",);
+        if (searchText) {
+            setSearch(JSON.parse(searchText));
+        }
+    }, []);
+
+    const searchRows = [];
+    if (search.length) {
+        for (const [i, search] of search.entries()){
+            searchRows.push(
+                <tr key={i}>
+                    <td>{i}</td>
+                    <td>{search.service}</td>
+                    <td>{search.state}</td>
+                    <td>{search.city}</td>
+                    <td>{search.population}</td>
+                    <td>{search.heat}</td>
+                    <td>{search.oldData}</td>
+                </tr>
+            );
+        }
+    } else {
+        searchRows.push(
+            <tr key = '0'>
+        <td colSpan='7'> No results found.</td>
+        </tr>
+        );
+    }
+
+
     return (
         <main>
             <section id="search">
@@ -41,24 +74,14 @@ export function Main() {
                     </tr>
                     </thead>
 
-                    <tbody>
-                    <tr>
-                        <td>example</td>
-                        <td>insert service here</td>
-                        <td>Utah</td>
-                        <td>Provo</td>
-                        <td>114,527</td>
-                        <td>N/A</td>
-                        <td>Data: date</td>
-                    </tr>
-                    </tbody>
+                    <tbody id = "searches"></tbody>
                 </table>
             </section>
 
             <section id="map">
                 <p>To be implemented: interactive map that uses websockets due to large amounts of different types of
                     data that changes as they interact with the map plus data updates as they come</p>
-                <img src="../../public/Utah_population_map.png"/>
+                <img alt = "temp image" src="../../public/Utah_population_map.png"/>
                 <p>image found at Wikipedia commons: https://commons.wikimedia.org/wiki/File:Utah_population_map.png</p>
             </section>
 
