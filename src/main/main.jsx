@@ -8,77 +8,91 @@ export function Main() {
     const [error, setError] = React.useState('');
 
     React.useEffect(() => {
-        try{
-        const searchText = localStorage.getItem("search");
-        if (searchText) {
-            const savedSearches = JSON.parse(searchText);
-            if (Array.isArray(savedSearches)) {
-                setSearch(savedSearches);
+        let cancelled = false;
+
+        async function loadSearches() {
+            try {
+                const response = await fetch('/api/searches', {
+                    credentials: 'same-origin',
+                });
+
+                if (!response.ok) {
+                    throw new Error(
+                        response.status === 401
+                            ? 'Please log in to view saved searches.'
+                            : `Could not load searches (${response.status}).`
+                    );
+                }
+
+                const savedSearches = await response.json();
+
+                if (!Array.isArray(savedSearches)) {
+                    throw new Error('The server returned an invalid search list.');
+                }
+
+                if (!cancelled) {
+                    setSearch(savedSearches);
+                }
+            } catch (error) {
+                if (!cancelled) {
+                    setError(error.message || 'Could not load searches.');
+                }
             }
         }
-    }catch (error){
-        console.error(error);
-    }
-}, []);
 
-function handleSearch(event){
-    event.preventDefault();
-    setError('');
+        loadSearches()
 
-    const parts = query.split(',');
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
-    if (parts.length !==2 || !parts[0].trim() || !parts[1].trim()) {
-        setError('Enter a city and state');
-        return;
-    }
+    async function handleSearch(event) {
+        event.preventDefault();
+        setError('');
 
-    const city = parts[0].trim();
-    const state = parts[1].trim();
+        const parts = query.split(',');
 
-    const newSearch = {
-        service: service,
-        state: state,
-        city: city,
-        population: 100,
-        heat: 1.15,
-        oldData: new Date().toLocaleDateString()
-    };
+        if (parts.length !== 2 || !parts[0].trim() || !parts[1].trim()) {
+            setError('Enter a city and state');
+            return;
+        }
 
-    const updatedSearches = [...search, newSearch];
-    try{
-        localStorage.setItem("search", JSON.stringify(updatedSearches));
-    }catch(error){
-    console.error(error);}
+        const city = parts[0].trim();
+        const state = parts[1].trim();
 
-    const searchText = localStorage.getItem("search");
-    const savedSearches = JSON.parse(searchText);
+        const newSearch = {
+            service: service,
+            state: state,
+            city: city,
+            population: 100,
+            heat: 1.15,
+            oldData: new Date().toLocaleDateString()
+        };
 
-    if (Array.isArray(savedSearches)) {
-        setSearch(
-            savedSearches.filter(
-                (item) =>
-                    item &&
-                    typeof item.service === 'string' &&
-                    typeof item.state === 'string' &&
-                    typeof item.city === 'string' &&
-                    Number.isFinite(item.population) &&
-                    Number.isFinite(item.heat) &&
-                    typeof item.oldData === 'string'
-            )
-        );
-    }
+        try {
+            const response = await fetch('/api/search', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'same-origin',
+                body: JSON.stringify(newSearch),
+            });
 
-    setSearch(updatedSearches);
+            if (!response.ok) {
+                throw new Error(
+                    response.status === 401
+                        ? 'Please log in again before saving a search.'
+                        : `Search failed (${response.status}).`
+                );
+            }
 
-    try {
-        localStorage.setItem("search", JSON.stringify(updatedSearches));
-    } catch (error) {
-        console.error(error);
-        setError(error);
-    }
-
-    setQuery('')
-    setService('');
+            const updatedSearches = await response.json();
+            setSearch(updatedSearches);
+            setQuery('');
+            setService('');
+        } catch (error) {
+            setError(error.message || 'Could not reach the server.');
+        }
 }
 
 
@@ -100,7 +114,7 @@ function handleSearch(event){
                     />
                     <label htmlFor="service-select">Choose a service</label>
                     <select name="service" id="service-select" value={service} onChange={(event) => setService(event.target.value)} required>
-                        <option value="" disabled selected hidden>Select an option...</option>
+                        <option defaultValue="" disabled hidden>Select an option...</option>
                         <option value="pediatrics">Pediatrics</option>
                         <option value="dentistry">Dentistry</option>
                     </select>
