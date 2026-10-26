@@ -6,6 +6,9 @@ const app = express();
 
 const authCookieName = 'token';
 
+let users = [];
+let searches = [];
+
 // The service port. In production the front-end code is statically hosted by the service on the same port.
 const port = process.argv.length > 2 ? process.argv[2] : 3000;
 
@@ -19,7 +22,7 @@ app.use(cookieParser());
 app.use(express.static('public'));
 
 // Router for service endpoints
-var apiRouter = express.Router();
+const apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 
 // CreateAuth a new user
@@ -68,6 +71,18 @@ const verifyAuth = async (req, res, next) => {
     }
 };
 
+
+// GetSearch
+apiRouter.get('/searches', verifyAuth, (_req, res) => {
+    res.send(searches);
+});
+
+// SubmitSearch
+apiRouter.post('/search', verifyAuth, (req, res) => {
+    searches = updateSearches(req.body);
+    res.send(searches);
+});
+
 // Default error handler
 app.use(function (err, req, res, next) {
     res.status(500).send({ type: err.name, message: err.message });
@@ -77,6 +92,11 @@ app.use(function (err, req, res, next) {
 app.use((_req, res) => {
     res.sendFile('index.html', { root: 'public' });
 });
+
+function updateSearches(newSearch) {
+    searches.push(newSearch);
+    return searches;
+}
 
 async function createUser(email, password) {
     const passwordHash = await bcrypt.hash(password, 10);

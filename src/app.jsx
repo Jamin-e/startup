@@ -2,7 +2,7 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
-import { Auth } from './auth/auth';
+import { Login } from './auth/login';
 import { Main } from './main/main';
 import { AuthState } from "./auth/authState";
 
@@ -37,11 +37,10 @@ export default function App() {
             </header>
 
             <Routes>
-                <Route path='/' element={<Main userName={userName}/>} />
                 <Route
-                    path='/auth'
+                    path='/'
                     element={
-                        <Auth
+                        <Login
                             userName={userName}
                             authState={authState}
                             onAuthChange={(userName, authState) => {
@@ -52,6 +51,7 @@ export default function App() {
                     }
                     exact
                 />
+                <Route path={'/main'} element={<Main userName={userName} />} />
                 <Route path='*' element={<NotFound />} />
             </Routes>
 

@@ -4,7 +4,7 @@ import { Unauthenticated } from './unauthenticated';
 import { Authenticated } from './authenticated';
 import { AuthState } from './authState';
 
-export function Auth({ userName, authState, onAuthChange}) {
+export function Login({ userName, authState, onAuthChange}) {
     return (
         <main>
             <div>

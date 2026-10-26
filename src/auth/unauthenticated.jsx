@@ -4,9 +4,17 @@ import Button from 'react-bootstrap/Button';
 import { MessageDialog } from './messageDialog';
 
 export function Unauthenticated(props) {
-    const [userName, setUserName] = React.useState(props.userName ?? '');
+    const [userName, setUserName] = React.useState(props.userName || '');
     const [password, setPassword] = React.useState('');
     const [displayError, setDisplayError] = React.useState(null);
+
+    async function loginUser() {
+        await loginOrCreate(`/api/auth/login`);
+    }
+
+    async function createUser() {
+        await loginOrCreate(`/api/auth/create`);
+    }
 
     async function loginOrCreate(endpoint) {
         const response = await fetch(endpoint, {
@@ -34,7 +42,7 @@ export function Unauthenticated(props) {
                 </div>
                 <div className='input-group mb-3'>
                     <span className='input-group-text'>🔒</span>
-                    <input className='form-control' type='password' value={password} onChange={(e) => setPassword(e.target.value)} placeholder='password' autoComplete="current-password" />
+                    <input className='form-control' type='password' onChange={(e) => setPassword(e.target.value)} placeholder='password' />
                 </div>
                 <Button variant='primary' onClick={() => loginUser()} disabled={!userName || !password}>
                     Login
