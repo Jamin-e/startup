@@ -46,6 +46,23 @@ function handleSearch(event){
 
     const updatedSearches = [...search, newSearch];
 
+    const savedSearches = JSON.parse(searchText);
+
+    if (Array.isArray(savedSearches)) {
+        setSearch(
+            savedSearches.filter(
+                (item) =>
+                    item &&
+                    typeof item.service === 'string' &&
+                    typeof item.state === 'string' &&
+                    typeof item.city === 'string' &&
+                    Number.isFinite(item.population) &&
+                    Number.isFinite(item.heat) &&
+                    typeof item.oldData === 'string'
+            )
+        );
+    }
+
     setSearch(updatedSearches);
 
     try {

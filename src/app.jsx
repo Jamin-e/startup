@@ -22,13 +22,13 @@ export default function App() {
                     <menu className="navbar-nav">
                         {authState === AuthState.Authenticated && (
                         <li className="nav-item">
-                            <NavLink className="nav-link" to="">
+                            <NavLink className="nav-link" to="/main">
                                 Home
                             </NavLink>
                         </li>
                         )}
                         <li className="nav-item">
-                            <NavLink className="nav-link" to="auth">
+                            <NavLink className="nav-link" to="/">
                                 Login
                             </NavLink>
                         </li>
@@ -49,7 +49,6 @@ export default function App() {
                             }}
                         />
                     }
-                    exact
                 />
                 <Route path={'/main'} element={<Main userName={userName} />} />
                 <Route path='*' element={<NotFound />} />

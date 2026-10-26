@@ -3,7 +3,7 @@ do
     case "${flag}" in
         k) key=${OPTARG};;
         h) hostname=${OPTARG};;
-        s) login=${OPTARG};;
+        s) service=${OPTARG};;
     esac
 done
 

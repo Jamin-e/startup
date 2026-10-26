@@ -18,8 +18,11 @@ app.use(express.json());
 // Use the cookie parser middleware for tracking authentication tokens
 app.use(cookieParser());
 
-// Serve up the front-end static content hosting
-app.use(express.static('public'));
+const path = require('path');
+
+const frontendPath = path.join(__dirname, '..', 'dist');
+
+app.use(express.static(frontendPath));
 
 // Router for service endpoints
 const apiRouter = express.Router();
@@ -90,7 +93,7 @@ app.use(function (err, req, res, next) {
 
 // Return the application's default page if the path is unknown
 app.use((_req, res) => {
-    res.sendFile('index.html', { root: 'public' });
+    res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 function updateSearches(newSearch) {

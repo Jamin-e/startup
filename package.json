@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/Jamin-e/startup#readme",
   "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.2",
     "vite": "^8.3.4"
   },
   "dependencies": {
