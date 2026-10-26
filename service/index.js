@@ -87,7 +87,7 @@ apiRouter.post('/search', verifyAuth, (req, res) => {
 });
 
 // Default error handler
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res) {
     res.status(500).send({ type: err.name, message: err.message });
 });
 

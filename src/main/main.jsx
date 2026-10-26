@@ -45,7 +45,12 @@ function handleSearch(event){
     };
 
     const updatedSearches = [...search, newSearch];
+    try{
+        localStorage.setItem("search", JSON.stringify(updatedSearches));
+    }catch(error){
+    console.error(error);}
 
+    const searchText = localStorage.getItem("search");
     const savedSearches = JSON.parse(searchText);
 
     if (Array.isArray(savedSearches)) {
