@@ -47,6 +47,7 @@ apiRouter.post('/auth/login', async (req, res) => {
     if (user) {
         if (await bcrypt.compare(req.body.password, user.password)) {
             user.token = uuid.v4();
+            await DB.updateUser(user);
             setAuthCookie(res, user.token);
             res.send({ email: user.email });
             return;
@@ -59,7 +60,7 @@ apiRouter.post('/auth/login', async (req, res) => {
 apiRouter.delete('/auth/logout', async (req, res) => {
     const user = await findUser('token', req.cookies[authCookieName]);
     if (user) {
-        delete user.token;
+        await DB.updateUserRemoveAuth(user);
     }
     res.clearCookie(authCookieName);
     res.status(204).end();
@@ -77,13 +78,14 @@ const verifyAuth = async (req, res, next) => {
 
 
 // GetSearch
-apiRouter.get('/searches', verifyAuth, (_req, res) => {
+apiRouter.get('/searches', verifyAuth, async (_req, res) => {
+    const searches = await DB.getSearches();
     res.send(searches);
 });
 
 // SubmitSearch
-apiRouter.post('/search', verifyAuth, (req, res) => {
-    searches = updateSearches(req.body);
+apiRouter.post('/search', verifyAuth, async (req, res) => {
+    const searches = await updateSearches(req.body);
     res.send(searches);
 });
 
@@ -105,9 +107,9 @@ app.use((_req, res) => {
     res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-function updateSearches(newSearch) {
-    searches.push(newSearch);
-    return searches;
+async function updateSearches(newSearch) {
+    await DB.addSearch(newSearch);
+    return DB.getSearches();
 }
 
 async function createUser(email, password) {
@@ -118,7 +120,7 @@ async function createUser(email, password) {
         password: passwordHash,
         token: uuid.v4(),
     };
-    users.push(user);
+    await DB.addUser(user);
 
     return user;
 }
@@ -126,7 +128,10 @@ async function createUser(email, password) {
 async function findUser(field, value) {
     if (!value) return null;
 
-    return users.find((u) => u[field] === value);
+    if (field === 'token') {
+        return DB.getUserByToken(value);
+    }
+    return DB.getUser(value);
 }
 
 // setAuthCookie in the HTTP response
