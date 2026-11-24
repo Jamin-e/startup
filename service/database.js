@@ -13,7 +13,7 @@ const searchCollection = db.collection('savedSearch');
         await db.command({ ping: 1 });
         console.log(`Connect to database`);
     } catch (ex) {
-        console.log(`Unable to connect to database with ${url} because ${ex.message}`);
+        console.log(`Unable to connect to database: ${ex.message}`);
         process.exit(1);
     }
 })();
@@ -38,12 +38,11 @@ async function updateUserRemoveAuth(user) {
     await userCollection.updateOne({ email: user.email }, { $unset: { token: 1 } });
 }
 
-async function addSearch(search) {
-    return searchCollection.insertOne(search);
+async function addSearch(email, search) {
+    return searchCollection.insertOne({ ...search, userEmail: email });
 }
-function getSearches() {
-    // Each search is stored as its own document, so an empty filter returns all searches.
-    const query = {};
+function getSearches(email) {
+    const query = { userEmail: email };
     const options = {
         sort: { _id: -1 },
         limit: 10,

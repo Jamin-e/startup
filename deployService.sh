@@ -45,7 +45,7 @@ rm -rf "$build_dir"
 mkdir -p "$build_dir"
 cp -R "$root_dir/dist" "$build_dir/dist"
 mkdir -p "$build_dir/service"
-cp "$root_dir/service/index.js" "$root_dir/service/package.json" "$build_dir/service/"
+cp "$root_dir/service/index.js" "$root_dir/service/database.js" "$root_dir/service/dbConfig.json" "$root_dir/service/package.json" "$build_dir/service/"
 if [[ -f "$root_dir/service/package-lock.json" ]]; then
     cp "$root_dir/service/package-lock.json" "$build_dir/service/"
 fi

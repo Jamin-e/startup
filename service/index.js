@@ -7,9 +7,6 @@ const DB = require('./database.js');
 
 const authCookieName = 'token';
 
-let users = [];
-let searches = [];
-
 // The service port. In production the front-end code is statically hosted by the service on the same port.
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
@@ -56,6 +53,11 @@ apiRouter.post('/auth/login', async (req, res) => {
     res.status(401).send({ msg: 'Unauthorized' });
 });
 
+// Restore the client session from the httpOnly authentication cookie.
+apiRouter.get('/auth/me', verifyAuth, (req, res) => {
+    res.send({ email: req.user.email });
+});
+
 // DeleteAuth logout a user
 apiRouter.delete('/auth/logout', async (req, res) => {
     const user = await findUser('token', req.cookies[authCookieName]);
@@ -70,6 +72,7 @@ apiRouter.delete('/auth/logout', async (req, res) => {
 const verifyAuth = async (req, res, next) => {
     const user = await findUser('token', req.cookies[authCookieName]);
     if (user) {
+        req.user = user;
         next();
     } else {
         res.status(401).send({ msg: 'Unauthorized' });
@@ -78,14 +81,14 @@ const verifyAuth = async (req, res, next) => {
 
 
 // GetSearch
-apiRouter.get('/searches', verifyAuth, async (_req, res) => {
-    const searches = await DB.getSearches();
+apiRouter.get('/searches', verifyAuth, async (req, res) => {
+    const searches = await DB.getSearches(req.user.email);
     res.send(searches);
 });
 
 // SubmitSearch
 apiRouter.post('/search', verifyAuth, async (req, res) => {
-    const searches = await updateSearches(req.body);
+    const searches = await updateSearches(req.user.email, req.body);
     res.send(searches);
 });
 
@@ -107,9 +110,9 @@ app.use((_req, res) => {
     res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-async function updateSearches(newSearch) {
-    await DB.addSearch(newSearch);
-    return DB.getSearches();
+async function updateSearches(email, newSearch) {
+    await DB.addSearch(email, newSearch);
+    return DB.getSearches(email);
 }
 
 async function createUser(email, password) {

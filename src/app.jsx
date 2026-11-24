@@ -1,15 +1,37 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
-import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, NavLink, Route, Routes } from 'react-router-dom';
 import { Login } from './auth/login';
 import { Main } from './main/main';
 import { AuthState } from "./auth/authState";
 
 export default function App() {
-    const [userName, setUserName] = React.useState(localStorage.getItem('userName')||'');
-    const currentAuthState = userName ? AuthState.Authenticated : AuthState.Unauthenticated;
-    const [authState, setAuthState] = React.useState(currentAuthState);
+    const [userName, setUserName] = React.useState('');
+    const [authState, setAuthState] = React.useState(AuthState.Unknown);
+
+    React.useEffect(() => {
+        let cancelled = false;
+        fetch('/api/auth/me', { credentials: 'same-origin' })
+            .then(async (response) => {
+                if (!response.ok) throw new Error('No active session');
+                return response.json();
+            })
+            .then(({ email }) => {
+                if (!cancelled) {
+                    setUserName(email);
+                    setAuthState(AuthState.Authenticated);
+                }
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    localStorage.removeItem('userName');
+                    setUserName('');
+                    setAuthState(AuthState.Unauthenticated);
+                }
+            });
+        return () => { cancelled = true; };
+    }, []);
 
     return (
         <BrowserRouter>
@@ -50,7 +72,14 @@ export default function App() {
                         />
                     }
                 />
-                <Route path={'/main'} element={<Main userName={userName} />} />
+                <Route
+                    path={'/main'}
+                    element={
+                        authState === AuthState.Unknown ? null :
+                            authState === AuthState.Authenticated ? <Main userName={userName} /> :
+                                <Navigate to="/" replace />
+                    }
+                />
                 <Route path='*' element={<NotFound />} />
             </Routes>
 
