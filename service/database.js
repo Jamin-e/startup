@@ -1,45 +1,56 @@
 const { MongoClient } = require('mongodb');
-const config = require('./dbConfig.json');
+const fs = require('node:fs');
+const path = require('node:path');
 
-const url = `mongodb+srv://${config.userName}:${config.password}@${config.hostname}`;
-const client = new MongoClient(url);
-const db = client.db('startup');
-const userCollection = db.collection('user');
-const searchCollection = db.collection('savedSearch');
+function loadConfigFile() {
+    const configPath = path.join(__dirname, 'dbconfig.json');
+    if (!fs.existsSync(configPath)) return {};
+    return JSON.parse(fs.readFileSync(configPath, 'utf8'));
+}
 
-// This will asynchronously test the connection and exit the process if it fails
-(async function testConnection() {
-    try {
-        await db.command({ ping: 1 });
-        console.log(`Connect to database`);
-    } catch (ex) {
-        console.log(`Unable to connect to database: ${ex.message}`);
-        process.exit(1);
+const config = loadConfigFile();
+let client;
+
+function getCollection(name) {
+    if (!client) {
+        const url = process.env.MONGODB_URI || (() => {
+            const userName = process.env.MONGODB_USERNAME || config.userName;
+            const password = process.env.MONGODB_PASSWORD || config.password;
+            const hostname = process.env.MONGODB_HOSTNAME || config.hostname;
+
+            if (!userName || !password || !hostname) {
+                throw new Error('MongoDB is not configured. Set MONGODB_URI or MONGODB_USERNAME, MONGODB_PASSWORD, and MONGODB_HOSTNAME.');
+            }
+
+            return `mongodb+srv://${encodeURIComponent(userName)}:${encodeURIComponent(password)}@${hostname}/?retryWrites=true&w=majority`;
+        })();
+        client = new MongoClient(url);
     }
-})();
+    return client.db('startup').collection(name);
+}
 
 function getUser(email) {
-    return userCollection.findOne({ email: email });
+    return getCollection('user').findOne({ email: email });
 }
 
 function getUserByToken(token) {
-    return userCollection.findOne({ token: token });
+    return getCollection('user').findOne({ token: token });
 }
 
 async function addUser(user) {
-    await userCollection.insertOne(user);
+    await getCollection('user').insertOne(user);
 }
 
 async function updateUser(user) {
-    await userCollection.updateOne({ email: user.email }, { $set: user });
+    await getCollection('user').updateOne({ email: user.email }, { $set: user });
 }
 
 async function updateUserRemoveAuth(user) {
-    await userCollection.updateOne({ email: user.email }, { $unset: { token: 1 } });
+    await getCollection('user').updateOne({ email: user.email }, { $unset: { token: 1 } });
 }
 
 async function addSearch(email, search) {
-    return searchCollection.insertOne({ ...search, userEmail: email });
+    return getCollection('savedSearch').insertOne({ ...search, userEmail: email });
 }
 function getSearches(email) {
     const query = { userEmail: email };
@@ -47,8 +58,13 @@ function getSearches(email) {
         sort: { _id: -1 },
         limit: 10,
     };
-    const cursor = searchCollection.find(query, options);
+    const cursor = getCollection('savedSearch').find(query, options);
     return cursor.toArray();
+}
+
+async function ping() {
+    getCollection('user');
+    await client.db('admin').command({ ping: 1 });
 }
 
 module.exports = {
@@ -59,4 +75,5 @@ module.exports = {
     updateUserRemoveAuth,
     addSearch,
     getSearches,
+    ping,
 };

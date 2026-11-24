@@ -8,7 +8,7 @@ const DB = require('./database.js');
 const authCookieName = 'token';
 
 // The service port. In production the front-end code is statically hosted by the service on the same port.
-const port = process.argv.length > 2 ? process.argv[2] : 4000;
+const port = Number(process.env.PORT || process.argv[2] || 4000);
 
 // JSON body parsing using built-in middleware
 app.use(express.json());
@@ -25,6 +25,16 @@ app.use(express.static(frontendPath));
 // Router for service endpoints
 const apiRouter = express.Router();
 app.use(`/api`, apiRouter);
+
+apiRouter.get('/health', async (_req, res) => {
+    try {
+        await DB.ping();
+        res.status(200).json({ status: 'ok', database: 'connected' });
+    } catch (err) {
+        console.error('MongoDB health check failed:', err);
+        res.status(503).json({ status: 'error', database: 'unavailable' });
+    }
+});
 
 // CreateAuth a new user
 apiRouter.post('/auth/create', async (req, res) => {
@@ -69,7 +79,7 @@ apiRouter.delete('/auth/logout', async (req, res) => {
 });
 
 // Middleware to verify that the user is authorized to call an endpoint
-const verifyAuth = async (req, res, next) => {
+async function verifyAuth(req, res, next) {
     const user = await findUser('token', req.cookies[authCookieName]);
     if (user) {
         req.user = user;
@@ -77,7 +87,7 @@ const verifyAuth = async (req, res, next) => {
     } else {
         res.status(401).send({ msg: 'Unauthorized' });
     }
-};
+}
 
 
 // GetSearch
@@ -94,15 +104,17 @@ apiRouter.post('/search', verifyAuth, async (req, res) => {
 
 // Default error handler
 /** @type {import('express').ErrorRequestHandler} */
-const errorHandler = (err, _req, res, next) => {
+function errorHandler(err, req, res, next) {
     if (res.headersSent) {
         return next(err);
     }
+
+    console.error('Request failed:', err);
     res.status(500).json({
         type: err.name || 'InternalServerError',
         message: err.message || 'An unexpected error occurred.',
     });
-};
+}
 app.use(errorHandler);
 
 // Return the application's default page if the path is unknown

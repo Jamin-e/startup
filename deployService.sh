@@ -45,7 +45,7 @@ rm -rf "$build_dir"
 mkdir -p "$build_dir"
 cp -R "$root_dir/dist" "$build_dir/dist"
 mkdir -p "$build_dir/service"
-cp "$root_dir/service/index.js" "$root_dir/service/database.js" "$root_dir/service/dbConfig.json" "$root_dir/service/package.json" "$build_dir/service/"
+cp "$root_dir/service/index.js" "$root_dir/service/database.js" "$root_dir/service/dbconfig.json" "$root_dir/service/package.json" "$build_dir/service/"
 if [[ -f "$root_dir/service/package-lock.json" ]]; then
     cp "$root_dir/service/package-lock.json" "$build_dir/service/"
 fi
@@ -75,10 +75,60 @@ fi
 cd "$remote_dir/service"
 npm ci --omit=dev
 
-# Replace any older PM2 process definition so it cannot keep running the
-# pre-deployment script path from the previous directory layout.
-pm2 delete "$service" >/dev/null 2>&1 || true
-pm2 start "$PWD/index.js" --name "$service" -- 4000
+# Remove this service's named process and any process still running either the
+# old root-level entry point or the newly deployed entry point. The old process
+# may have a different PM2 name and otherwise continue serving stale code.
+while IFS= read -r process_id; do
+    [[ -n "$process_id" ]] || continue
+    pm2 delete "$process_id" >/dev/null
+done < <(pm2 jlist | node -e '
+    const path = require("node:path");
+    const [service, legacyPath, currentPath] = process.argv.slice(1);
+    const paths = new Set([legacyPath, currentPath].map((value) => path.resolve(value)));
+    let input = "";
+    process.stdin.setEncoding("utf8");
+    process.stdin.on("data", (chunk) => input += chunk);
+    process.stdin.on("end", () => {
+        for (const proc of JSON.parse(input)) {
+            const script = proc.pm2_env && proc.pm2_env.pm_exec_path;
+            if (proc.name === service || (script && paths.has(path.resolve(script)))) {
+                console.log(proc.pm_id);
+            }
+        }
+    });
+' "$service" "$HOME/$remote_dir/index.js" "$PWD/index.js")
+
+PORT=${PORT:-4000} pm2 start "$PWD/index.js" --name "$service"
+
+# Wait for PM2 to report the exact deployed entry point online. Checking once
+# immediately after `pm2 start` can pass while the process is still launching.
+for attempt in {1..10}; do
+    if pm2 jlist | node -e '
+    const path = require("node:path");
+    const [service, expectedPath] = process.argv.slice(1);
+    let input = "";
+    process.stdin.setEncoding("utf8");
+    process.stdin.on("data", (chunk) => input += chunk);
+    process.stdin.on("end", () => {
+        const proc = JSON.parse(input).find((item) => item.name === service);
+        const actualPath = proc && proc.pm2_env && proc.pm2_env.pm_exec_path;
+        const status = proc && proc.pm2_env && proc.pm2_env.status;
+        if (proc && status === "online" && path.resolve(actualPath) === path.resolve(expectedPath)) {
+            console.log(`Verified PM2 is running ${actualPath}`);
+        } else {
+            process.exitCode = 1;
+        }
+    });
+' "$service" "$PWD/index.js"; then
+        break
+    fi
+    if [[ "$attempt" -eq 10 ]]; then
+        pm2 describe "$service" || true
+        printf 'PM2 did not bring %s online. Check `pm2 logs %s --lines 100` on the server.\n' "$PWD/index.js" "$service" >&2
+        exit 1
+    fi
+    sleep 1
+done
 ENDSSH
 
 printf '\n----> Deployment complete: %s on %s\n' "$service" "$hostname"
