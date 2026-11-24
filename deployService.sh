@@ -1,51 +1,84 @@
-while getopts k:h:s: flag
-do
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+while getopts "k:h:s:" flag; do
     case "${flag}" in
-        k) key=${OPTARG};;
-        h) hostname=${OPTARG};;
-        s) service=${OPTARG};;
+        k) key=${OPTARG} ;;
+        h) hostname=${OPTARG} ;;
+        s) service=${OPTARG} ;;
+        *) exit 2 ;;
     esac
 done
 
-if [[ -z "$key" || -z "$hostname" || -z "$service" ]]; then
-    printf "\nMissing required parameter.\n"
-    printf "  syntax: deployService.sh -k <pem key file> -h <hostname> -s <service>\n\n"
+if [[ -z "${key:-}" || -z "${hostname:-}" || -z "${service:-}" ]]; then
+    printf '\nMissing required parameter.\n'
+    printf '  syntax: deployService.sh -k <pem key file> -h <hostname> -s <service>\n\n'
     exit 1
 fi
 
-printf "\n----> Deploying React bundle $service to $hostname with $key\n"
+if [[ ! "$service" =~ ^[A-Za-z0-9_-]+$ ]]; then
+    printf 'Service name may contain only letters, numbers, underscores, and hyphens.\n' >&2
+    exit 1
+fi
 
-# Step 1
-printf "\n----> Build the distribution package\n"
-rm -rf build
-mkdir build
-npm install # make sure vite is installed so that we can bundle
-npm run build # build the React front end
-cp -rf dist build/public # move the React front end to the target distribution
-cp service/*.js build # move the back end login to the target distribution
-cp service/*.json build
+if [[ ! -f "$key" ]]; then
+    printf 'SSH key file not found: %s\n' "$key" >&2
+    exit 1
+fi
 
-# Step 2
-printf "\n----> Clearing out previous distribution on the target\n"
-ssh -i "$key" ubuntu@$hostname << ENDSSH
-rm -rf services/${service}
-mkdir -p services/${service}
+root_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+build_dir="$root_dir/build"
+remote_dir="services/$service"
+
+cleanup() {
+    rm -rf "$build_dir"
+}
+trap cleanup EXIT
+
+printf '\n----> Building frontend\n'
+cd "$root_dir"
+npm ci
+npm run build
+
+printf '\n----> Preparing deployment package\n'
+rm -rf "$build_dir"
+mkdir -p "$build_dir"
+cp -R "$root_dir/dist" "$build_dir/dist"
+mkdir -p "$build_dir/service"
+cp "$root_dir/service/index.js" "$root_dir/service/package.json" "$build_dir/service/"
+if [[ -f "$root_dir/service/package-lock.json" ]]; then
+    cp "$root_dir/service/package-lock.json" "$build_dir/service/"
+fi
+
+printf '\n----> Creating remote deployment directory\n'
+ssh -i "$key" "ubuntu@$hostname" "mkdir -p '$remote_dir'"
+
+printf '\n----> Copying deployment package\n'
+scp -r -i "$key" "$build_dir/dist" "$build_dir/service" "ubuntu@$hostname:$remote_dir/"
+
+printf '\n----> Installing backend dependencies and restarting service\n'
+ssh -i "$key" "ubuntu@$hostname" bash -l -s -- "$remote_dir" "$service" <<'ENDSSH'
+set -Eeuo pipefail
+remote_dir=$1
+service=$2
+
+# Node installed with nvm is often unavailable in a non-interactive SSH shell.
+if ! command -v npm >/dev/null 2>&1 && [[ -s "$HOME/.nvm/nvm.sh" ]]; then
+    source "$HOME/.nvm/nvm.sh"
+fi
+
+if ! command -v npm >/dev/null 2>&1; then
+    printf 'npm is not installed or is not on PATH for user %s. Install Node.js/npm on the server, then rerun deployment.\n' "$USER" >&2
+    exit 1
+fi
+
+cd "$remote_dir/service"
+npm ci --omit=dev
+
+# Replace any older PM2 process definition so it cannot keep running the
+# pre-deployment script path from the previous directory layout.
+pm2 delete "$service" >/dev/null 2>&1 || true
+pm2 start "$PWD/index.js" --name "$service" -- 4000
 ENDSSH
 
-# Step 3
-printf "\n----> Copy the distribution package to the target\n"
-scp -r -i "$key" build/* ubuntu@$hostname:services/$service
-
-# Step 4
-printf "\n----> Deploy the service on the target\n"
-ssh -i "$key" ubuntu@$hostname << ENDSSH
-bash -i
-cd services/${service}
-npm install
-pm2 restart ${service}
-ENDSSH
-
-# Step 5
-printf "\n----> Removing local copy of the distribution package\n"
-rm -rf build
-rm -rf dist
+printf '\n----> Deployment complete: %s on %s\n' "$service" "$hostname"

@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const express = require('express');
 const uuid = require('uuid');
 const app = express();
+const DB = require('./database.js');
 
 const authCookieName = 'token';
 
@@ -10,7 +11,7 @@ let users = [];
 let searches = [];
 
 // The service port. In production the front-end code is statically hosted by the service on the same port.
-const port = process.argv.length > 2 ? process.argv[2] : 3000;
+const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
 // JSON body parsing using built-in middleware
 app.use(express.json());
@@ -87,9 +88,17 @@ apiRouter.post('/search', verifyAuth, (req, res) => {
 });
 
 // Default error handler
-app.use(function (err, req, res) {
-    res.status(500).send({ type: err.name, message: err.message });
-});
+/** @type {import('express').ErrorRequestHandler} */
+const errorHandler = (err, _req, res, next) => {
+    if (res.headersSent) {
+        return next(err);
+    }
+    res.status(500).json({
+        type: err.name || 'InternalServerError',
+        message: err.message || 'An unexpected error occurred.',
+    });
+};
+app.use(errorHandler);
 
 // Return the application's default page if the path is unknown
 app.use((_req, res) => {
