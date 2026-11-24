@@ -1,7 +1,7 @@
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const express = require('express');
-const uuid = require('uuid');
+const { randomUUID } = require('node:crypto');
 const app = express();
 const DB = require('./database.js');
 
@@ -43,7 +43,7 @@ apiRouter.post('/auth/login', async (req, res) => {
     const user = await findUser('email', req.body.email);
     if (user) {
         if (await bcrypt.compare(req.body.password, user.password)) {
-            user.token = uuid.v4();
+            user.token = randomUUID();
             await DB.updateUser(user);
             setAuthCookie(res, user.token);
             res.send({ email: user.email });
@@ -121,7 +121,7 @@ async function createUser(email, password) {
     const user = {
         email: email,
         password: passwordHash,
-        token: uuid.v4(),
+        token: randomUUID(),
     };
     await DB.addUser(user);
 
